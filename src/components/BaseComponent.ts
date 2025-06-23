@@ -158,3 +158,5 @@ export abstract class BaseComponent {
     };
   }
 }
+
+export { BaseComponent }
