@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTimeWise - Mobile View</title>
+    <link rel="stylesheet" href="../popup.css">
+    <link rel="stylesheet" href="../dashboard.css">
+    <script src="../lib/chart.min.js"></script>
+    <script src="chrome-compat-demo.js"></script>
+    <script src="demo-data.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --card-bg: #1e1e3f;
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --text-color: #ffffff;
+            --accent-color: #4a90e2;
+            --accent-green: #4caf50;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            width: 100vw !important;
+            max-width: none !important;
+        }
+
+        .container {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 32px 24px !important;
+            width: 100% !important;
+        }
+
+        .demo-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .browser-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 20px 0;
+        }
+
+        .browser-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, var(--accent-color), #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .time-period {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 6px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .time-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .time-btn.active {
+            background: var(--accent-color);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .total-time-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .total-time-card h2 {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+
+        .total-time-card p {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mobile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card h3 {
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            height: 400px;
+        }
+
+        .app-list {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .app-list h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .footer-btn {
+            background: var(--accent-color);
+            border: none;
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="demo-indicator">📱 Demo</div>
+
+    <div class="container">
+        <div class="browser-header">
+            <h1>WebTimeWise</h1>
+        </div>
+
+        <div class="time-period">
+            <button id="todayBtn" class="time-btn active">Today</button>
+            <button id="weekBtn" class="time-btn">This Week</button>
+        </div>
+
+        <div class="main-content">
+            <div class="total-time-card">
+                <h2>Mobile Screen Time Today</h2>
+                <p id="totalTime">4h 23m</p>
+            </div>
+
+            <div class="mobile-stats">
+                <div class="stat-card">
+                    <h3>📱 Pickups</h3>
+                    <div class="value">47</div>
+                    <div>Today</div>
+                </div>
+                <div class="stat-card">
+                    <h3>⏰ Avg Session</h3>
+                    <div class="value">5m 36s</div>
+                    <div>Per pickup</div>
+                </div>
+                <div class="stat-card">
+                    <h3>🔔 Notifications</h3>
+                    <div class="value">23</div>
+                    <div>Received</div>
+                </div>
+                <div class="stat-card">
+                    <h3>📱 Most Used</h3>
+                    <div class="value">Instagram</div>
+                    <div>1h 23m</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="mobileChart"></canvas>
+            </div>
+
+            <div class="app-list">
+                <h3>Top Apps Today</h3>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">📷</div>
+                        <div class="app-details">
+                            <h4>Instagram</h4>
+                            <p>Social Media</p>
+                        </div>
+                    </div>
+                    <div>1h 23m</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">💬</div>
+                        <div class="app-details">
+                            <h4>WhatsApp</h4>
+                            <p>Messaging</p>
+                        </div>
+                    </div>
+                    <div>45m</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">🎵</div>
+                        <div class="app-details">
+                            <h4>Spotify</h4>
+                            <p>Music</p>
+                        </div>
+                    </div>
+                    <div>38m</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">📺</div>
+                        <div class="app-details">
+                            <h4>YouTube</h4>
+                            <p>Entertainment</p>
+                        </div>
+                    </div>
+                    <div>32m</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">🎮</div>
+                        <div class="app-details">
+                            <h4>Subway Surfers</h4>
+                            <p>Games</p>
+                        </div>
+                    </div>
+                    <div>28m</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">📧</div>
+                        <div class="app-details">
+                            <h4>Gmail</h4>
+                            <p>Productivity</p>
+                        </div>
+                    </div>
+                    <div>17m</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="goalsBtn" class="action-btn">🎯 Goals</button>
+            <button id="settingsBtn" class="action-btn">⚙️ Settings</button>
+            <button id="moreBtn" class="action-btn">📊 More</button>
+        </div>
+
+        <footer class="main-footer">
+            <button id="dashboardBtn" class="footer-btn">Back to Devices</button>
+            <a href="https://bolt.new" target="_blank" class="bolt-badge-logo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18" height="18" style="margin-right: 8px;">
+                <path d="M13 2L3 14h7l-1 8L21 10h-7l1-8z"/>
+              </svg>
+              <span>Built with <strong>Bolt</strong></span>
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize mobile chart
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('mobileChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Instagram', 'WhatsApp', 'Spotify', 'YouTube', 'Games', 'Gmail'],
+                    datasets: [{
+                        data: [32, 17, 15, 12, 11, 6],
+                        backgroundColor: [
+                            '#E4405F', '#25D366', '#1DB954', '#FF0000', '#FF6B6B', '#EA4335'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: '#ffffff',
+                                boxWidth: 12,
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Override dashboard button
+            const dashboardBtn = document.getElementById('dashboardBtn');
+            if (dashboardBtn) {
+                dashboardBtn.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
