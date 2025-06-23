@@ -95,11 +95,20 @@
             font-size: 3rem;
             font-weight: 700;
             margin: 0;
-            background: linear-gradient(135deg, var(--accent-color), #9c27b0);
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 12px;
+            margin-bottom: 0;
+        }
+
+        .view-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            margin-bottom: 24px;
+            text-align: center;
         }
 
         .time-period {
@@ -271,6 +280,95 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
+
+        .app-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-item:last-child {
+            border-bottom: none;
+        }
+
+        .app-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .app-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .app-details p {
+            margin: 0;
+            opacity: 0.7;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .app-time {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        /* Site list styles */
+        .site-list h3 {
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .site-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .site-logo {
+            width: 40px;
+            height: 40px;
+            font-size: 1.4rem;
+        }
+
+        .site-info > div strong {
+            font-size: 1rem;
+        }
+
+        .site-time {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
@@ -281,6 +379,8 @@
         <div class="browser-header">
             <h1>WebTimeWise</h1>
         </div>
+
+        <div class="view-title">Mobile Screen Time</div>
 
         <div class="time-period">
             <button id="todayBtn" class="time-btn active">Today</button>
@@ -322,66 +422,7 @@
 
             <div class="app-list">
                 <h3>Top Apps Today</h3>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">📷</div>
-                        <div class="app-details">
-                            <h4>Instagram</h4>
-                            <p>Social Media</p>
-                        </div>
-                    </div>
-                    <div>1h 23m</div>
-                </div>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">💬</div>
-                        <div class="app-details">
-                            <h4>WhatsApp</h4>
-                            <p>Messaging</p>
-                        </div>
-                    </div>
-                    <div>45m</div>
-                </div>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">🎵</div>
-                        <div class="app-details">
-                            <h4>Spotify</h4>
-                            <p>Music</p>
-                        </div>
-                    </div>
-                    <div>38m</div>
-                </div>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">📺</div>
-                        <div class="app-details">
-                            <h4>YouTube</h4>
-                            <p>Entertainment</p>
-                        </div>
-                    </div>
-                    <div>32m</div>
-                </div>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">🎮</div>
-                        <div class="app-details">
-                            <h4>Subway Surfers</h4>
-                            <p>Games</p>
-                        </div>
-                    </div>
-                    <div>28m</div>
-                </div>
-                <div class="app-item">
-                    <div class="app-info">
-                        <div class="app-icon">📧</div>
-                        <div class="app-details">
-                            <h4>Gmail</h4>
-                            <p>Productivity</p>
-                        </div>
-                    </div>
-                    <div>17m</div>
-                </div>
+                <div id="topAppsList"></div>
             </div>
         </div>
 
@@ -403,41 +444,133 @@
     </div>
 
     <script>
-        // Initialize mobile chart
+        // Initialize mobile view with dummy data
         document.addEventListener('DOMContentLoaded', () => {
+            const mobileData = DemoDataHelper.getMobileData();
+            const chartData = DemoDataHelper.getMobileChartData();
+            const weekPickups = mobileData.weeklyStats.pickups.reduce((a,b)=>a+b,0);
+            const weekScreenTime = mobileData.weeklyStats.screenTime;
+            const weekChartLabels = mobileData.weeklyStats.labels;
+            
+            // Update stats with dummy data
+            document.getElementById('totalTime').textContent = mobileData.totalTime;
+            
+            // Update mobile stats cards
+            const statCards = document.querySelectorAll('.stat-card .value');
+            if (statCards.length >= 4) {
+                statCards[0].textContent = mobileData.pickups;
+                statCards[1].textContent = mobileData.avgSession;
+                statCards[2].textContent = mobileData.notifications;
+                statCards[3].textContent = mobileData.mostUsed;
+            }
+            
+            // Chart context and helper functions
             const ctx = document.getElementById('mobileChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Instagram', 'WhatsApp', 'Spotify', 'YouTube', 'Games', 'Gmail'],
-                    datasets: [{
-                        data: [32, 17, 15, 12, 11, 6],
-                        backgroundColor: [
-                            '#E4405F', '#25D366', '#1DB954', '#FF0000', '#FF6B6B', '#EA4335'
-                        ],
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'right',
-                            labels: {
-                                color: '#ffffff',
-                                boxWidth: 12,
-                                padding: 15,
-                                font: {
-                                    size: 11
+            let currentChart;
+
+            const createAppsChart = () => {
+                if (currentChart) currentChart.destroy();
+                currentChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            data: chartData.data,
+                            backgroundColor: chartData.colors,
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                labels: {
+                                    color: '#ffffff',
+                                    boxWidth: 12,
+                                    padding: 15,
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        return `${label}: ${value}%`;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            };
+
+            const createWeekChart = () => {
+                if (currentChart) currentChart.destroy();
+                currentChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: weekChartLabels,
+                        datasets: [{
+                            label: 'Screen Time (hrs)',
+                            data: weekScreenTime,
+                            backgroundColor: '#4a90e2',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.parsed.y}h`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { color:'#fff' }, grid:{ color:'rgba(255,255,255,0.1)' } },
+                            y: { ticks: { color:'#fff' }, grid:{ color:'rgba(255,255,255,0.1)' } }
+                        }
+                    }
+                });
+            };
+
+            // Initial chart
+            createAppsChart();
+
+            // Populate top apps list
+            const topAppsList = document.getElementById('topAppsList');
+            if (topAppsList && mobileData.apps) {
+                renderApps(topAppsList, mobileData.apps);
+            }
+
+            // Populate top websites list
+            const mobileSitesList = document.getElementById('mobileSitesList');
+            if (mobileSitesList && mobileData.topSites) {
+                mobileSitesList.innerHTML = mobileData.topSites.map(site => `
+                    <div class="site-item">
+                        <div class="site-info">
+                            <span class="site-logo">${site.favicon}</span>
+                            <div>
+                                <div><strong>${site.name}</strong></div>
+                                <div style="opacity:0.8;font-size:0.8rem;">${site.category}</div>
+                            </div>
+                        </div>
+                        <div>${site.time}</div>
+                    </div>
+                `).join('');
+            }
 
             // Override dashboard button
             const dashboardBtn = document.getElementById('dashboardBtn');
@@ -446,7 +579,82 @@
                     window.location.href = 'index.html';
                 });
             }
+
+            // Handle Today / This Week toggle
+            const todayBtn = document.getElementById('todayBtn');
+            const weekBtn = document.getElementById('weekBtn');
+
+            if (todayBtn && weekBtn) {
+                todayBtn.addEventListener('click', () => {
+                    todayBtn.classList.add('active');
+                    weekBtn.classList.remove('active');
+
+                    document.getElementById('totalTime').textContent = mobileData.totalTime;
+                    document.querySelector('.total-time-card h2').textContent = 'Mobile Screen Time Today';
+                    statCards[0].textContent = mobileData.pickups;
+                    statCards[1].textContent = mobileData.avgSession;
+                    statCards[2].textContent = mobileData.notifications;
+                    statCards[3].textContent = mobileData.mostUsed;
+                    renderApps(topAppsList, mobileData.apps);
+                    createAppsChart();
+                });
+
+                weekBtn.addEventListener('click', () => {
+                    weekBtn.classList.add('active');
+                    todayBtn.classList.remove('active');
+
+                    document.getElementById('totalTime').textContent = mobileData.weekTime;
+                    document.querySelector('.total-time-card h2').textContent = 'Mobile Screen Time This Week';
+
+                    statCards[0].textContent = weekPickups;
+                    statCards[1].textContent = mobileData.avgSession;
+                    statCards[2].textContent = mobileData.notifications * 7;
+                    statCards[3].textContent = mobileData.mostUsed;
+
+                    // build weekly app times
+                    const weeklyApps = mobileData.apps.map(a => {
+                        const mins = minutesFromString(a.time) * 7;
+                        return { ...a, time: formatMinutes(mins) };
+                    });
+                    renderApps(topAppsList, weeklyApps);
+                    // change header text
+                    document.querySelector('.app-list h3').textContent = 'Top Apps This Week';
+                    createWeekChart();
+                });
+            }
         });
+
+        // helper to convert "Xh Ym" or "Xm" to minutes
+        function minutesFromString(str) {
+            const parts = str.split(' ');
+            let minutes = 0;
+            parts.forEach(p => {
+                if (p.endsWith('h')) minutes += parseInt(p) * 60;
+                if (p.endsWith('m')) minutes += parseInt(p);
+            });
+            return minutes;
+        }
+
+        function formatMinutes(mins) {
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return h > 0 ? `${h}h ${m}m` : `${m}m`;
+        }
+
+        function renderApps(listElement, appsArray) {
+            listElement.innerHTML = appsArray.map(app => `
+                <div class="app-item">
+                    <div class="app-info">
+                        <div class="app-icon">${app.logo ? `<img src='${app.logo}' alt='${app.name} logo'/>` : app.icon}</div>
+                        <div class="app-details">
+                            <h4>${app.name}</h4>
+                            <p>${app.category}</p>
+                        </div>
+                    </div>
+                    <div class="app-time">${app.time}</div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html> 

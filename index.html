@@ -203,12 +203,149 @@
             left: 20px;
             background: rgba(255, 193, 7, 0.9);
             color: #333;
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
             z-index: 1000;
+        }
+
+        /* Demo Popup Modal */
+        .demo-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .demo-popup-modal {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            animation: slideIn 0.4s ease-out;
+            color: white;
+        }
+
+        .demo-popup-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-popup-body {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .demo-popup-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .github-btn {
+            background: #24292e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .github-btn:hover {
+            background: #1a1e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(36, 41, 46, 0.4);
+        }
+
+        .demo-video-btn {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-video-btn:hover {
+            background: linear-gradient(135deg, #ff3742, #ff2f3a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        }
+
+        .demo-continue-btn {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-continue-btn:hover {
+            background: linear-gradient(135deg, #45a049, #388e3c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .demo-popup-overlay.hidden {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -224,10 +361,52 @@
                 flex-direction: column;
                 align-items: center;
             }
+
+            .demo-popup-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .demo-popup-modal {
+                margin: 20px;
+                padding: 24px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Demo Popup Modal -->
+    <div id="demoPopupOverlay" class="demo-popup-overlay">
+        <div class="demo-popup-modal">
+            <div class="demo-popup-title">
+                🚧 Demo Dashboard Only
+            </div>
+            <div class="demo-popup-body">
+                🚀 Welcome to WebTimeWise (Demo Mode)
+You're currently viewing a frontend-only demo of the WebTimeWise Dashboard.
+This version is not connected to the live backend, mobile tracking app, or AI-powered analytics.
+To run the full project (including Chrome Extension + Mobile App), please visit the GitHub repository for setup instructions.
+                </div>
+            <div class="demo-popup-buttons">
+                <a href="https://github.com/your-username/webtimewise" target="_blank" class="github-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    Go to GitHub
+                </a>
+                <a href="https://www.youtube.com/watch?v=demo-video-id" target="_blank" class="demo-video-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                    </svg>
+                    Watch Demo Video
+                </a>
+                <button id="demoContinueBtn" class="demo-continue-btn">
+                    Continue to Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="demo-indicator">🎮 Demo Mode</div>
 
     <div class="container">
@@ -238,18 +417,6 @@
 
         <div class="demo-banner">
             🚀 <strong>Demo Mode</strong> - Experience WebTimeWise with realistic data across all devices
-        </div>
-
-        <div class="demo-controls">
-            <h3>🎮 Demo Scenarios</h3>
-            <p>Choose a browsing scenario to see different data patterns:</p>
-            <div class="scenario-buttons">
-                <button class="scenario-btn active" onclick="setScenario('productive')">📚 Productive</button>
-                <button class="scenario-btn" onclick="setScenario('social')">📱 Social Media</button>
-                <button class="scenario-btn" onclick="setScenario('mixed')">🔄 Mixed</button>
-                <button class="scenario-btn" onclick="setScenario('gaming')">🎮 Gaming</button>
-                <button class="scenario-btn" onclick="setScenario('work')">💼 Work</button>
-            </div>
         </div>
 
         <h2>📱 Select Device</h2>
@@ -392,6 +559,26 @@
 
         // Initialize with default scenario
         document.addEventListener('DOMContentLoaded', () => {
+            // Handle demo popup
+            const demoPopupOverlay = document.getElementById('demoPopupOverlay');
+            const demoContinueBtn = document.getElementById('demoContinueBtn');
+            
+            // Handle continue button click
+            if (demoContinueBtn && demoPopupOverlay) {
+                demoContinueBtn.addEventListener('click', () => {
+                    demoPopupOverlay.classList.add('hidden');
+                });
+            }
+            
+            // Close popup when clicking on overlay (outside modal)
+            if (demoPopupOverlay) {
+                demoPopupOverlay.addEventListener('click', (e) => {
+                    if (e.target === demoPopupOverlay) {
+                        demoPopupOverlay.classList.add('hidden');
+                    }
+                });
+            }
+            
             const savedScenario = localStorage.getItem('webtimewise_demoScenario') || 'productive';
             setScenario(savedScenario);
         });

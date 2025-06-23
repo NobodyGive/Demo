@@ -109,7 +109,15 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 12px;
+            margin-bottom: 0;
+        }
+
+        .view-title {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            margin-bottom: 24px;
         }
 
         /* Language Selector */
@@ -246,9 +254,11 @@
             padding: 24px;
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
-            height: 400px;
+            height: 350px;
             grid-column: 1 / -1;
         }
+
+        .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; grid-column:1 / -1; }
 
         /* Device Breakdown */
         .device-breakdown {
@@ -365,6 +375,107 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
         }
+
+        /* List styles */
+        .site-item, .app-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .site-item:last-child, .app-item:last-child { border-bottom: none; }
+        .site-info, .app-info { display: flex; align-items: center; gap: 12px; }
+        .site-logo, .app-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .app-time { font-weight: 600; color: var(--accent-color); }
+
+        /* list cards */
+        .list-card {background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(10px);}
+        .list-card h3{font-size:1.2rem;margin-bottom:16px;color:var(--text-secondary);font-weight:600}
+        .app-icon img,.site-logo img{width:100%;height:100%;object-fit:contain;border-radius:8px;}
+
+        .progress-bar-wrap{background:rgba(255,255,255,0.08);height:8px;border-radius:6px;margin-top:4px;}
+        .progress-bar{height:100%;background:var(--accent-color);border-radius:6px;}
+
+        .lists-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;grid-column:1 / -1;}
+
+        /* Lists Grid */
+        .lists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+            grid-column: 1 / -1;
+        }
+
+        .list-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .list-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .list-card h3 {
+            margin: 0 0 16px 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Progress bars */
+        .progress-bar-wrap {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* App item styling */
+        .app-item .app-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .app-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .app-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -373,8 +484,10 @@
 
     <div class="container">
         <div class="browser-header">
-            <h1>WebTimeWise</h1>
+            <h1>Overall Screen Uses</h1>
         </div>
+
+        
 
         <div class="flag-container">
             <div id="selectedFlag" class="selected-flag">
@@ -424,42 +537,35 @@
                 </div>
             </div>
 
-            <div class="chart-container">
-                <canvas id="overallChart"></canvas>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <canvas id="deviceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
             </div>
 
-            <div class="device-breakdown">
-                <h3>Device Breakdown</h3>
-                <div class="device-item">
-                    <div class="device-info">
-                        <div class="device-icon">💻</div>
-                        <div class="device-details">
-                            <h4>MacBook Pro</h4>
-                            <p>Development & Work</p>
-                        </div>
-                    </div>
-                    <div>6h 45m</div>
-                </div>
-                <div class="device-item">
-                    <div class="device-info">
-                        <div class="device-icon">📱</div>
-                        <div class="device-details">
-                            <h4>iPhone 15</h4>
-                            <p>Social & Communication</p>
-                        </div>
-                    </div>
-                    <div>4h 23m</div>
-                </div>
-                <div class="device-item">
-                    <div class="device-info">
-                        <div class="device-icon">🌐</div>
-                        <div class="device-details">
-                            <h4>Chrome Browser</h4>
-                            <p>Web Browsing & Research</p>
-                        </div>
-                    </div>
-                    <div>1h 26m</div>
-                </div>
+            <div class="lists-grid">
+            <div class="list-card" id="browserSitesCard">
+                <h3>Browser Sites <span id="browserTotal" style="float:right"></span></h3>
+                <div id="overallBrowserList"></div>
+            </div>
+
+            <div class="list-card" id="mobileAppsCard">
+                <h3>Mobile Apps <span id="mobileTotal" style="float:right"></span></h3>
+                <div id="overallMobileList"></div>
+            </div>
+
+            <div class="list-card" id="laptopAppsCard">
+                <h3>Laptop Apps <span id="laptopTotal" style="float:right"></span></h3>
+                <div id="overallLaptopList"></div>
+            </div>
+            </div><!-- end lists-grid -->
+
+            <div class="list-card" id="goalsCard">
+                <h3>🎯 Daily Goals Progress</h3>
+                <div id="goalsList"></div>
             </div>
         </div>
 
@@ -552,19 +658,121 @@
         </div>
     </div>
 
-    <script src="../popup.js"></script>
-    <script src="../voiceReview.js"></script>
-    <script src="../focus-block.js"></script>
     <script>
-        // Initialize overall chart
+        let deviceChart, categoryChart;
+
+        // Dummy data arrays (minutes)
+        const deviceTodayData = [360, 240, 120]; // Laptop, Mobile, Browser
+        const deviceWeekData  = deviceTodayData.map(v => v * 7);
+
+        const categoryTodayData = [180, 120, 90, 60, 45, 75]; // Social, Productive, Games, Other, News, Entertainment
+        const categoryWeekData  = categoryTodayData.map(v => v * 7);
+
+        // Today vs Week data for all sections
+        const todayData = {
+            totalTime: '12h 34m',
+            devices: {
+                laptop: '6h 45m',
+                mobile: '4h 23m',
+                browser: '1h 26m'
+            },
+            focusScore: '87%',
+            title: 'Total Digital Time Today'
+        };
+
+        const weekData = {
+            totalTime: '87h 58m',
+            devices: {
+                laptop: '47h 15m',
+                mobile: '30h 41m',
+                browser: '10h 2m'
+            },
+            focusScore: '82%',
+            title: 'Total Digital Time This Week'
+        };
+
+        // Weekly data for lists (multiplied by 7 with some variation)
+        const weeklyBrowserData = {
+            topSites: [
+                { name: 'YouTube', category: 'Entertainment', time: '14h 35m', favicon: '🎥' },
+                { name: 'GitHub', category: 'Development', time: '12h 20m', favicon: '💻' },
+                { name: 'Stack Overflow', category: 'Development', time: '8h 45m', favicon: '📚' },
+                { name: 'Reddit', category: 'Social Media', time: '7h 30m', favicon: '🔗' },
+                { name: 'Wikipedia', category: 'Educational', time: '6h 15m', favicon: '📖' },
+                { name: 'Gmail', category: 'Communication', time: '5h 40m', favicon: '📧' },
+                { name: 'Twitter', category: 'Social Media', time: '4h 25m', favicon: '🐦' },
+                { name: 'LinkedIn', category: 'Professional', time: '3h 50m', favicon: '💼' }
+            ]
+        };
+
+        const weeklyMobileData = {
+            apps: [
+                { name: 'Instagram', category: 'Social Media', time: '21h 30m', icon: '📷', logo: null },
+                { name: 'WhatsApp', category: 'Communication', time: '18h 45m', icon: '💬', logo: null },
+                { name: 'YouTube', category: 'Entertainment', time: '16h 20m', icon: '🎥', logo: null },
+                { name: 'Spotify', category: 'Music', time: '14h 15m', icon: '🎵', logo: null },
+                { name: 'TikTok', category: 'Entertainment', time: '12h 40m', icon: '🎬', logo: null },
+                { name: 'Gmail', category: 'Communication', time: '9h 25m', icon: '📧', logo: null },
+                { name: 'Maps', category: 'Navigation', time: '7h 10m', icon: '🗺️', logo: null },
+                { name: 'Twitter', category: 'Social Media', time: '6h 35m', icon: '🐦', logo: null }
+            ]
+        };
+
+        const weeklyLaptopData = {
+            applications: [
+                { name: 'Visual Studio Code', category: 'Development', time: '28h 45m', icon: '💻', logo: null },
+                { name: 'Chrome', category: 'Browser', time: '24h 30m', icon: '🌐', logo: null },
+                { name: 'Slack', category: 'Communication', time: '16h 20m', icon: '💬', logo: null },
+                { name: 'Figma', category: 'Design', time: '14h 15m', icon: '🎨', logo: null },
+                { name: 'Terminal', category: 'Development', time: '12h 40m', icon: '⚡', logo: null },
+                { name: 'Spotify', category: 'Music', time: '10h 25m', icon: '🎵', logo: null },
+                { name: 'Notion', category: 'Productivity', time: '8h 50m', icon: '📝', logo: null },
+                { name: 'Zoom', category: 'Communication', time: '7h 15m', icon: '📹', logo: null }
+            ]
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
-            const ctx = document.getElementById('overallChart').getContext('2d');
-            new Chart(ctx, {
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded!');
+                return;
+            }
+
+            console.log('DOM loaded, initializing charts...');
+            console.log('Chart.js available:', typeof Chart);
+            console.log('DemoDataHelper available:', typeof DemoDataHelper);
+
+            // Check if DemoDataHelper is available
+            if (typeof DemoDataHelper === 'undefined') {
+                console.error('DemoDataHelper is not available!');
+                return;
+            }
+
+            const overallData = DemoDataHelper.getOverallData();
+            console.log('Overall data:', overallData);
+
+            // Check if canvas elements exist
+            const deviceCanvas = document.getElementById('deviceChart');
+            const categoryCanvas = document.getElementById('categoryChart');
+            
+            if (!deviceCanvas) {
+                console.error('Device chart canvas not found!');
+                return;
+            }
+            
+            if (!categoryCanvas) {
+                console.error('Category chart canvas not found!');
+                return;
+            }
+
+            const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+            console.log('Device canvas found:', !!deviceCtx);
+            deviceChart = new Chart(deviceCtx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Laptop', 'Mobile', 'Browser'],
                     datasets: [{
-                        data: [54, 35, 11],
+                        data: deviceTodayData,
                         backgroundColor: [
                             '#007ACC', '#E4405F', '#4285F4'
                         ],
@@ -593,13 +801,193 @@
                                 label: function(context) {
                                     const label = context.label || '';
                                     const value = context.raw || 0;
-                                    return `${label}: ${value}%`;
+                                    return `${label}: ${value}m`;
                                 }
                             }
                         }
                     }
                 }
             });
+            console.log('Device chart created');
+
+            // Category chart setup
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            console.log('Category canvas found:', !!categoryCtx);
+            const categoryColors = ['#4285F4','#34A853','#FBBC05','#EA4335','#9C27B0','#FF9800'];
+
+            // initialise category chart with today data
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Social Media', 'Productive', 'Games', 'Other', 'News', 'Entertainment'],
+                    datasets: [{
+                        data: categoryTodayData,
+                        backgroundColor: categoryColors,
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: '#ffffff',
+                                boxWidth: 15,
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context){
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}m`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Category chart created');
+
+            // Today / Week toggle behaviour
+            const todayBtn = document.getElementById('todayBtn');
+            const weekBtn  = document.getElementById('weekBtn');
+            console.log('Toggle buttons found:', !!todayBtn, !!weekBtn);
+
+            function updateCharts(isWeek){
+                console.log('Updating charts for:', isWeek ? 'week' : 'today');
+                const devData = isWeek ? deviceWeekData : deviceTodayData;
+                const catData = isWeek ? categoryWeekData : categoryTodayData;
+
+                // Update charts
+                deviceChart.data.datasets[0].data = devData;
+                deviceChart.update();
+
+                categoryChart.data.datasets[0].data = catData;
+                categoryChart.update();
+
+                // Update goals
+                updateGoals(isWeek);
+
+                // Update all other sections with weekly/daily data
+                updateAllSections(isWeek);
+
+                if(isWeek){
+                    todayBtn.classList.remove('active');
+                    weekBtn.classList.add('active');
+                }else{
+                    weekBtn.classList.remove('active');
+                    todayBtn.classList.add('active');
+                }
+            }
+
+            function updateAllSections(isWeek) {
+                const currentData = isWeek ? weekData : todayData;
+                const currentBrowserData = isWeek ? weeklyBrowserData : DemoDataHelper.getBrowserData();
+                const currentMobileData = isWeek ? weeklyMobileData : DemoDataHelper.getMobileData();
+                const currentLaptopData = isWeek ? weeklyLaptopData : DemoDataHelper.getLaptopData();
+
+                // Update total time and title
+                const totalTimeEl = document.getElementById('totalTime');
+                const totalTimeCardTitle = document.querySelector('.total-time-card h2');
+                if (totalTimeEl) totalTimeEl.textContent = currentData.totalTime;
+                if (totalTimeCardTitle) totalTimeCardTitle.textContent = currentData.title;
+
+                // Update device stats cards
+                const statCards = document.querySelectorAll('.stat-card');
+                if (statCards.length >= 4) {
+                    statCards[0].querySelector('.value').textContent = currentData.devices.laptop;
+                    statCards[1].querySelector('.value').textContent = currentData.devices.mobile;
+                    statCards[2].querySelector('.value').textContent = currentData.devices.browser;
+                    statCards[3].querySelector('.value').textContent = currentData.focusScore;
+                }
+
+                // Update Browser Sites List
+                const browserList = document.getElementById('overallBrowserList');
+                if (browserList && currentBrowserData.topSites) {
+                    browserList.innerHTML = currentBrowserData.topSites.map(site => `
+                        <div class="app-item">
+                            <div class="app-info">
+                                <div class="app-icon">${site.favicon}</div>
+                                <div class="app-details">
+                                    <h4>${site.name}</h4>
+                                    <p>${site.category}</p>
+                                </div>
+                            </div>
+                            <div class="app-time">${site.time}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Update Mobile Apps List
+                const mobileList = document.getElementById('overallMobileList');
+                if (mobileList && currentMobileData.apps) {
+                    mobileList.innerHTML = currentMobileData.apps.map(app => `
+                        <div class="app-item">
+                            <div class="app-info">
+                                <div class="app-icon">${app.logo ? `<img src="${app.logo}" style="width:40px;height:40px;border-radius:8px;" />` : app.icon}</div>
+                                <div class="app-details">
+                                    <h4>${app.name}</h4>
+                                    <p>${app.category}</p>
+                                </div>
+                            </div>
+                            <div class="app-time">${app.time}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Update Laptop Apps List
+                const laptopList = document.getElementById('overallLaptopList');
+                if (laptopList && currentLaptopData.applications) {
+                    laptopList.innerHTML = currentLaptopData.applications.map(app => `
+                        <div class="app-item">
+                            <div class="app-info">
+                                <div class="app-icon">${app.logo ? `<img src="${app.logo}" style="width:40px;height:40px;border-radius:8px;" />` : app.icon}</div>
+                                <div class="app-details">
+                                    <h4>${app.name}</h4>
+                                    <p>${app.category}</p>
+                                </div>
+                            </div>
+                            <div class="app-time">${app.time}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Update totals
+                const browserTotalEl = document.getElementById('browserTotal');
+                const mobileTotalEl = document.getElementById('mobileTotal');
+                const laptopTotalEl = document.getElementById('laptopTotal');
+
+                if (browserTotalEl && currentBrowserData.topSites) {
+                    const browserTotal = sumMinutes(currentBrowserData.topSites);
+                    browserTotalEl.textContent = formatMinutes(browserTotal);
+                }
+
+                if (mobileTotalEl && currentMobileData.apps) {
+                    const mobileTotal = sumMinutes(currentMobileData.apps);
+                    mobileTotalEl.textContent = formatMinutes(mobileTotal);
+                }
+
+                if (laptopTotalEl && currentLaptopData.applications) {
+                    const laptopTotal = sumMinutes(currentLaptopData.applications);
+                    laptopTotalEl.textContent = formatMinutes(laptopTotal);
+                }
+
+                // Update goals title
+                const goalsCardTitle = document.querySelector('#goalsCard h3');
+                if (goalsCardTitle) {
+                    goalsCardTitle.textContent = isWeek ? '🎯 Weekly Goals Progress' : '🎯 Daily Goals Progress';
+                }
+            }
+
+            todayBtn.addEventListener('click', () => updateCharts(false));
+            weekBtn.addEventListener('click', () => updateCharts(true));
 
             // Override dashboard button
             const dashboardBtn = document.getElementById('dashboardBtn');
@@ -608,6 +996,89 @@
                     window.location.href = 'index.html';
                 });
             }
+
+            console.log('All initialization complete');
+
+            // Helper functions for time parsing and formatting
+            function parseTimeToMinutes(timeStr) {
+                let minutes = 0;
+                const parts = timeStr.split(' ');
+                for (const part of parts) {
+                    if (part.endsWith('h')) {
+                        minutes += parseInt(part) * 60;
+                    } else if (part.endsWith('m')) {
+                        minutes += parseInt(part);
+                    }
+                }
+                return minutes;
+            }
+            
+            function formatMinutes(min) {
+                const h = Math.floor(min / 60);
+                const mm = min % 60;
+                return h > 0 ? `${h}h ${mm}m` : `${mm}m`;
+            }
+
+            // Calculate and display totals
+            function sumMinutes(arr) {
+                return arr.reduce((acc, item) => {
+                    let minutes = 0;
+                    const timeStr = item.time;
+                    timeStr.split(' ').forEach(part => {
+                        if (part.endsWith('h')) minutes += parseInt(part) * 60;
+                        if (part.endsWith('m')) minutes += parseInt(part);
+                    });
+                    return acc + minutes;
+                }, 0);
+            }
+
+            // Goals progress with specific data
+            const goalsData = [
+                { name: 'Social Media', actual: '1h 37m', goal: '2h' },
+                { name: 'Entertainment', actual: '30m', goal: '1h 30m' },
+                { name: 'Productive / Educational', actual: '1h 54m', goal: '4h' },
+                { name: 'Development', actual: '31m', goal: '3h' },
+                { name: 'Games', actual: '1h 52m', goal: '2h' },
+                { name: 'Communication', actual: '9m', goal: '1h' }
+            ];
+            
+            // Weekly goals data (same as daily multiplied by 7)
+            const goalsWeekData = goalsData.map(g => ({
+                name: g.name,
+                actual: formatMinutes(parseTimeToMinutes(g.actual) * 7),
+                goal: formatMinutes(parseTimeToMinutes(g.goal) * 7)
+            }));
+            
+            function updateGoals(isWeek) {
+                const currentGoalsData = isWeek ? goalsWeekData : goalsData;
+                const goalsList = document.getElementById('goalsList');
+                if (goalsList) {
+                    goalsList.innerHTML = currentGoalsData.map(g => {
+                        const actualMin = parseTimeToMinutes(g.actual);
+                        const goalMin = parseTimeToMinutes(g.goal);
+                        const pct = Math.min(100, Math.round(actualMin / goalMin * 100));
+                        return `
+                            <div style="margin-bottom:12px;">
+                                <strong>${g.name}</strong>
+                                <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                                    <span>${g.actual} / ${g.goal}</span>
+                                </div>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar" style="width:${pct}%;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+            
+            // Initial goals render
+            updateGoals(false);
+
+            // Initial population of all sections with today's data
+            updateAllSections(false);
+
+            console.log('All data population complete');
         });
     </script>
 </body>

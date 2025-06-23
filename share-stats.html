@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebTimeWise - Share Stats</title>
-    <link rel="stylesheet" href="../popup.css">
-    <script src="../lib/chart.min.js"></script>
-    <script src="chrome-compat-demo.js"></script>
+    <title>WebTimeWise - Share Your Stats</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="lib/chart.min.js"></script>
     <script src="demo-data.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -22,8 +22,15 @@
             --text-color: #ffffff;
             --accent-color: #4a90e2;
             --accent-green: #4caf50;
+            --accent-orange: #ff9800;
+            --accent-purple: #9c27b0;
+            --border-color: rgba(255, 255, 255, 0.15);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body, html {
@@ -42,7 +49,7 @@
             padding: 32px 24px !important;
             width: 100% !important;
         }
-        
+
         .demo-indicator {
             position: fixed;
             top: 20px;
@@ -56,270 +63,397 @@
             z-index: 1000;
             backdrop-filter: blur(10px);
         }
+
         .back-btn {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 12px;
             cursor: pointer;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             z-index: 1001;
         }
+
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        .share-card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 20px 0;
+        }
+
+        .share-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .share-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
         }
-        .share-options {
+
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            gap: 24px;
+            margin: 24px 0;
         }
-        .share-option {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        .share-option:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        .share-option h3 {
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        .share-option .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
+
         .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-emoji {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
             text-align: center;
         }
-        .stat-item .value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+
+        .chart-container {
+            height: 300px;
         }
-        .stat-item .label {
-            font-size: 0.9rem;
-            opacity: 0.8;
+
+        .summary-text {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+            border-left: 4px solid var(--accent-color);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .motivational-message {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 24px 0;
+            color: var(--accent-green);
+        }
+
+        .share-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            background: var(--accent-color);
+            border: none;
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-btn:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .share-btn.secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+
+        .share-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <a href="index.html" class="back-btn">← Back</a>
-    <div class="demo-indicator">📊 Demo</div>
+    <div class="demo-indicator">📤 Demo</div>
 
     <div class="container">
-        <header class="main-header">
-            <h1>WebTimeWise</h1>
-            <div class="time-period">
-                <button id="todayBtn" class="time-btn active">Today</button>
-                <button id="weekBtn" class="time-btn">This Week</button>
-            </div>
-        </header>
+        <div class="share-header">
+            <h1>Your Weekly Public Summary</h1>
+            <p>Your weekly productivity insights at a glance</p>
+        </div>
 
-        <section class="main-content">
-            <div class="total-time-card">
-                <h2>Share Your Stats</h2>
-                <p>Show off your digital wellness progress!</p>
-            </div>
-
-            <div class="stats-summary">
+        <div class="summary-card">
+            <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="value">8h 23m</div>
-                    <div class="label">Total Screen Time</div>
+                    <div class="stat-emoji">⏱️</div>
+                    <div class="stat-label">Total Screen Time</div>
+                    <div class="stat-value">37h 57m</div>
                 </div>
                 <div class="stat-item">
-                    <div class="value">5h 12m</div>
-                    <div class="label">Productive Time</div>
+                    <div class="stat-emoji">🎯</div>
+                    <div class="stat-label">Productivity Score</div>
+                    <div class="stat-value">1%</div>
                 </div>
                 <div class="stat-item">
-                    <div class="value">87%</div>
-                    <div class="label">Focus Score</div>
-                </div>
-                <div class="stat-item">
-                    <div class="value">4/7</div>
-                    <div class="label">Goals Met</div>
+                    <div class="stat-emoji">🌐</div>
+                    <div class="stat-label">Top Websites</div>
+                    <div class="stat-value">youtube.com, chess.com</div>
                 </div>
             </div>
+        </div>
 
-            <div class="share-card">
-                <h3>Share Options</h3>
-                <div class="share-options">
-                    <div class="share-option" onclick="shareToSocial('twitter')">
-                        <div class="icon">🐦</div>
-                        <h3>Twitter</h3>
-                        <p>Share your progress with followers</p>
-                    </div>
-                    <div class="share-option" onclick="shareToSocial('instagram')">
-                        <div class="icon">📷</div>
-                        <h3>Instagram</h3>
-                        <p>Post to your story</p>
-                    </div>
-                    <div class="share-option" onclick="shareToSocial('linkedin')">
-                        <div class="icon">💼</div>
-                        <h3>LinkedIn</h3>
-                        <p>Share with professional network</p>
-                    </div>
-                    <div class="share-option" onclick="shareToSocial('whatsapp')">
-                        <div class="icon">💬</div>
-                        <h3>WhatsApp</h3>
-                        <p>Send to friends & family</p>
-                    </div>
-                    <div class="share-option" onclick="shareToSocial('email')">
-                        <div class="icon">📧</div>
-                        <h3>Email</h3>
-                        <p>Send detailed report</p>
-                    </div>
-                    <div class="share-option" onclick="shareToSocial('copy')">
-                        <div class="icon">📋</div>
-                        <h3>Copy Link</h3>
-                        <p>Copy shareable link</p>
-                    </div>
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3>Daily Screen Time</h3>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
                 </div>
             </div>
-
-            <div class="share-card">
-                <h3>Customize Your Share</h3>
-                <div style="margin: 15px 0;">
-                    <label style="display: block; margin-bottom: 10px;">Include in share:</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" checked> Screen time summary
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" checked> Productivity score
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" checked> Goals progress
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox"> Detailed breakdown
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox"> Weekly comparison
-                        </label>
-                    </div>
-                </div>
-                <button class="action-btn" style="width: 100%;">Generate Share Image</button>
-            </div>
-
-            <div class="share-card">
-                <h3>Recent Shares</h3>
-                <div style="margin: 15px 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div>
-                            <div style="font-weight: bold;">Yesterday's Progress</div>
-                            <div style="font-size: 0.9rem; opacity: 0.7;">Shared on Twitter</div>
-                        </div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">2 hours ago</div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div>
-                            <div style="font-weight: bold;">Weekly Summary</div>
-                            <div style="font-size: 0.9rem; opacity: 0.7;">Shared on WhatsApp</div>
-                        </div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">1 day ago</div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
-                        <div>
-                            <div style="font-weight: bold;">Focus Mode Achievement</div>
-                            <div style="font-size: 0.9rem; opacity: 0.7;">Shared on Instagram</div>
-                        </div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">3 days ago</div>
-                    </div>
+            <div class="chart-card">
+                <h3>Category Breakdown</h3>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="actions">
-            <button id="goalsBtn" class="action-btn">🎯 Goals</button>
-            <button id="settingsBtn" class="action-btn">⚙️ Settings</button>
-            <button id="moreBtn" class="action-btn">📊 More</button>
-        </section>
+        <div class="summary-card">
+            <h3>Weekly Summary</h3>
+            <div class="summary-text">
+                This week, you spent 37h 57m online. You were 1% productive. You spent 14h 44m in Entertainment, 3h 45m in Social Media, and 0h 27m in Productivity. Your top website(s) were youtube.com and chess.com.
+            </div>
+            
+            <div class="motivational-message">
+                ⏳ Keep Pushing!
+            </div>
+        </div>
 
-        <footer class="main-footer">
-            <button id="dashboardBtn" class="footer-btn">Back to Devices</button>
-            <a href="https://bolt.new" target="_blank" class="bolt-badge-logo">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18" height="18" style="margin-right: 8px;">
-                <path d="M13 2L3 14h7l-1 8L21 10h-7l1-8z"/>
-              </svg>
-              <span>Built with <strong>Bolt</strong></span>
-            </a>
-        </footer>
+        <div class="share-actions">
+            <button class="share-btn" onclick="shareWeek()">
+                📤 Share My Week
+            </button>
+            <button class="share-btn secondary" onclick="copyPublicLink()">
+                🔗 Copy Public Link
+            </button>
+        </div>
     </div>
 
     <script>
-        function shareToSocial(platform) {
-            const message = "🚀 Just tracked 8h 23m of screen time with WebTimeWise! 87% focus score and hit 4/7 daily goals. #DigitalWellness #Productivity";
-            const url = "https://webtimewise.demo";
-            
-            let shareUrl = '';
-            switch(platform) {
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`;
-                    break;
-                case 'instagram':
-                    alert('📷 Instagram sharing would open the app with your stats image');
-                    return;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'whatsapp':
-                    shareUrl = `https://wa.me/?text=${encodeURIComponent(message + ' ' + url)}`;
-                    break;
-                case 'email':
-                    shareUrl = `mailto:?subject=My WebTimeWise Stats&body=${encodeURIComponent(message + '\n\n' + url)}`;
-                    break;
-                case 'copy':
-                    navigator.clipboard.writeText(url).then(() => {
-                        alert('✅ Link copied to clipboard!');
-                    });
-                    return;
-            }
-            
-            if (shareUrl) {
-                window.open(shareUrl, '_blank');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize daily chart
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Screen Time (hours)',
+                        data: [6.2, 5.8, 7.1, 4.9, 6.5, 3.8, 3.6],
+                        backgroundColor: [
+                            '#4a90e2',
+                            '#4a90e2',
+                            '#4a90e2',
+                            '#4a90e2',
+                            '#4a90e2',
+                            '#ff9800',
+                            '#ff9800'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#ffffff',
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y}h ${Math.round((context.parsed.y % 1) * 60)}m`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Initialize category pie chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Entertainment', 'Social Media', 'Productivity', 'Shopping', 'News'],
+                    datasets: [{
+                        data: [39, 10, 1, 8, 12],
+                        backgroundColor: [
+                            '#ff9800',
+                            '#2196f3',
+                            '#4caf50',
+                            '#9c27b0',
+                            '#ff5722'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: '#ffffff',
+                                boxWidth: 12,
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        function shareWeek() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Weekly Screen Time Summary',
+                    text: 'Check out my weekly productivity insights from WebTimeWise! This week I spent 37h 57m online with a 1% productivity score.',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const text = 'Check out my weekly productivity insights from WebTimeWise! This week I spent 37h 57m online with a 1% productivity score. ' + window.location.href;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Share text copied to clipboard!');
+                });
             }
         }
 
-        // Override dashboard button
-        document.addEventListener('DOMContentLoaded', () => {
-            const dashboardBtn = document.getElementById('dashboardBtn');
-            if (dashboardBtn) {
-                dashboardBtn.addEventListener('click', () => {
-                    window.location.href = 'index.html';
-                });
-            }
-        });
+        function copyPublicLink() {
+            const publicLink = `${window.location.origin}/demo/share-stats.html?user=demo&week=${new Date().getWeek()}`;
+            navigator.clipboard.writeText(publicLink).then(() => {
+                alert('Public link copied to clipboard!');
+            }).catch(() => {
+                alert('Could not copy link. Please copy manually: ' + publicLink);
+            });
+        }
+
+        // Helper function to get week number
+        Date.prototype.getWeek = function() {
+            const date = new Date(this.getTime());
+            date.setHours(0, 0, 0, 0);
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            const week1 = new Date(date.getFullYear(), 0, 4);
+            return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        };
     </script>
 </body>
 </html> 
