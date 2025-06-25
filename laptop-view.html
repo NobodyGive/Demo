@@ -158,6 +158,101 @@
             margin-bottom: 24px;
             text-align: center;
         }
+
+        /* Country Flags Section */
+        .flags-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flags-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .flags-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .flag-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 60px;
+            box-shadow: var(--shadow);
+        }
+
+        .flag-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .flag-item.selected-flag {
+            border-color: var(--accent-color);
+            background: rgba(74, 144, 226, 0.1);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .flag-img {
+            width: 28px;
+            height: 20px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .flag-item span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        /* Theme Toggle Section */
+        .theme-section {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .simple-theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .simple-theme-toggle:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #themeIcon {
+            font-size: 1rem;
+        }
         .app-icon img {
             width: 100%;
             height: 100%;
@@ -173,6 +268,15 @@
     <div class="container">
         <header class="main-header">
             <h1>Laptop Screen Time</h1>
+            
+
+
+    <!-- Theme Toggle -->
+    <button id="simpleThemeToggle" class="simple-theme-toggle" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText">Dark</span>
+    </button>
+            
             <div class="time-period">
                 <button id="todayBtn" class="time-btn active">Today</button>
                 <button id="weekBtn" class="time-btn">This Week</button>
@@ -368,7 +472,55 @@
                     window.location.href = 'index.html';
                 });
             }
+
+            // Country Flags Functionality
+            function initializeFlags() {
+                const flagItems = document.querySelectorAll('.flag-item');
+                const savedCountry = localStorage.getItem('selectedCountry') || 'us';
+                
+                // Set initial selected flag
+                flagItems.forEach(item => {
+                    item.classList.remove('selected-flag');
+                    if (item.dataset.country === savedCountry) {
+                        item.classList.add('selected-flag');
+                    }
+                });
+                
+                // Add click handlers
+                flagItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        // Remove selected class from all flags
+                        flagItems.forEach(flag => flag.classList.remove('selected-flag'));
+                        
+                        // Add selected class to clicked flag
+                        item.classList.add('selected-flag');
+                        
+                        // Save selection
+                        const country = item.dataset.country;
+                        localStorage.setItem('selectedCountry', country);
+                        
+                        // Show notification (simple alert for demo)
+                        const countryNames = {
+                            'us': 'United States',
+                            'de': 'Germany', 
+                            'fr': 'France',
+                            'es': 'Spain',
+                            'jp': 'Japan',
+                            'cn': 'China',
+                            'in': 'India'
+                        };
+                        
+                        console.log(`Country set to: ${countryNames[country] || country.toUpperCase()}`);
+                    });
+                });
+            }
+
+            // Initialize flags
+            initializeFlags();
         });
     </script>
+    
+    <!-- Theme Toggle Script -->
+    <script src="theme-toggle.js"></script>
 </body>
 </html> 
