@@ -6,6 +6,9 @@
     <title>WebTimeWise - Mobile View</title>
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="dashboard.css">
+    <!-- Shepherd.js for guided tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css" />
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
     <script src="lib/chart.min.js"></script>
     <script src="chrome-compat-demo.js"></script>
     <script src="demo-data.js"></script>
@@ -620,6 +623,12 @@
             <button id="todayBtn" class="time-btn active">Today</button>
             <button id="weekBtn" class="time-btn">This Week</button>
         </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button id="start-mobile-tour-btn" class="action-btn" style="background: #E4405F; margin: 0 auto;">
+                🎯 Take Mobile Tour
+            </button>
+        </div>
 
         <div class="main-content">
             <div class="total-time-card">
@@ -938,5 +947,248 @@
     
     <!-- Theme Toggle Script -->
     <script src="theme-toggle.js"></script>
+    
+    <style>
+        /* Custom Shepherd.js Styling for Mobile View */
+        .shepherd-element {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 350px;
+        }
+
+        .shepherd-text {
+            color: #1a202c;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .shepherd-header {
+            background: linear-gradient(135deg, #E4405F, #F56565);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 16px 16px 0 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .shepherd-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .shepherd-button {
+            background: #E4405F;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-left: 8px;
+        }
+
+        .shepherd-button:hover {
+            background: #d73447;
+            transform: translateY(-1px);
+        }
+
+        .shepherd-button.shepherd-button-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .shepherd-button.shepherd-button-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Light mode adjustments */
+        body.light-theme .shepherd-element {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(132, 204, 22, 0.3);
+        }
+
+        body.light-theme .shepherd-header {
+            background: linear-gradient(135deg, #84cc16, #16a34a);
+        }
+
+        body.light-theme .shepherd-button {
+            background: #84cc16;
+        }
+
+        body.light-theme .shepherd-button:hover {
+            background: #65a30d;
+        }
+    </style>
+
+    <script>
+        // Mobile View Guided Tour Implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (typeof Shepherd === 'undefined') {
+                    console.error('Shepherd.js not loaded');
+                    return;
+                }
+
+                // Initialize Shepherd tour
+                const mobileTour = new Shepherd.Tour({
+                    useModalOverlay: true,
+                    defaultStepOptions: {
+                        classes: 'shadow-md bg-pink-dark',
+                        scrollTo: { behavior: 'smooth', block: 'center' },
+                        modalOverlayOpeningPadding: 15,
+                        cancelIcon: {
+                            enabled: true
+                        }
+                    }
+                });
+
+                // Define tour steps
+                mobileTour.addStep({
+                    title: '📱 Mobile Dashboard Tour',
+                    text: 'Welcome to Mobile View! This displays your smartphone app usage and screen time data.',
+                    attachTo: {
+                        element: '#start-mobile-tour-btn',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                        text: 'Start Tour',
+                        action: mobileTour.next,
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                mobileTour.addStep({
+                    title: '⏱️ Time Period',
+                    text: 'Toggle between Today and This Week to view different periods of your mobile usage.',
+                    attachTo: {
+                        element: '.time-period',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                        text: 'Back',
+                        action: mobileTour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    }, {
+                        text: 'Next',
+                        action: mobileTour.next,
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                mobileTour.addStep({
+                    title: '📊 Total Mobile Time',
+                    text: 'This shows your total screen time on mobile devices for the selected time period.',
+                    attachTo: {
+                        element: '.total-time-card',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                        text: 'Back',
+                        action: mobileTour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    }, {
+                        text: 'Next',
+                        action: mobileTour.next,
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                mobileTour.addStep({
+                    title: '📈 App Usage Chart',
+                    text: 'This pie chart breaks down your mobile usage by app categories - Social Media, Productivity, Games, etc.',
+                    attachTo: {
+                        element: '#mobileChart',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                        text: 'Back',
+                        action: mobileTour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    }, {
+                        text: 'Next',
+                        action: mobileTour.next,
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                mobileTour.addStep({
+                    title: '📋 Top Apps List',
+                    text: 'This list shows your most-used mobile apps with exact time spent and app categories.',
+                    attachTo: {
+                        element: '#topAppsList',
+                        on: 'top'
+                    },
+                    buttons: [{
+                        text: 'Back',
+                        action: mobileTour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    }, {
+                        text: 'Next',
+                        action: mobileTour.next,
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                mobileTour.addStep({
+                    title: '⚙️ Mobile Controls',
+                    text: 'Use these buttons to set mobile usage goals, configure app settings, and access detailed analytics.',
+                    attachTo: {
+                        element: '.actions',
+                        on: 'top'
+                    },
+                    buttons: [{
+                        text: 'Back',
+                        action: mobileTour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    }, {
+                        text: 'Done',
+                        action: function() {
+                            mobileTour.complete();
+                            localStorage.setItem('mobileTourCompleted', 'true');
+                        },
+                        classes: 'shepherd-button'
+                    }]
+                });
+
+                // Tour event handlers
+                mobileTour.on('complete', function() {
+                    localStorage.setItem('mobileTourCompleted', 'true');
+                    console.log('Mobile view tour completed!');
+                });
+
+                mobileTour.on('cancel', function() {
+                    console.log('Mobile view tour cancelled');
+                });
+
+                // Manual tour trigger
+                const startTourBtn = document.getElementById('start-mobile-tour-btn');
+                if (startTourBtn) {
+                    startTourBtn.addEventListener('click', function() {
+                        mobileTour.start();
+                    });
+                }
+
+                // Auto-start on first visit
+                const mobileTourCompleted = localStorage.getItem('mobileTourCompleted');
+                if (!mobileTourCompleted) {
+                    setTimeout(() => {
+                        mobileTour.start();
+                    }, 1500);
+                }
+
+                console.log('Mobile View guided tour initialized!');
+                
+            }, 1000);
+        });
+    </script>
 </body>
 </html> 
